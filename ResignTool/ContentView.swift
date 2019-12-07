@@ -16,7 +16,7 @@ enum SCFileType {
     case mobileprovision
 }
 
-struct ContentView: View {
+struct ContentView: View, DropDelegate {
     @State var ipaPath: String = ""
     @State var mobileprovisionPath: String = ""
     @State var bundleId: String = ""
@@ -65,10 +65,30 @@ struct ContentView: View {
                         .foregroundColor(Color.black)
                 }
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
-        }.onAppear {
-        }
+        }.onDrop(of: [(kUTTypeFileURL as String)], delegate: self)
     }
     
+    func performDrop(info: DropInfo) -> Bool {
+        let itemProviders = info.itemProviders(for: [(kUTTypeFileURL as String)])
+        for itemProvider in itemProviders {
+            itemProvider.loadItem(forTypeIdentifier: (kUTTypeFileURL as String), options: nil) {(item, error) in
+                if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
+                    let path = url.path
+                    if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
+                        self.ipaPath = path
+                    } else if path.hasSuffix(".mobileprovision") {
+                        self.mobileprovisionPath = path
+                    }
+                }
+            }
+        }
+        return true
+    }
+//    itemProvider.loadItem(forTypeIdentifier: (kUTTypeFileURL as String), options: nil) {item, error in
+//        guard let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
+//        // Do something with the file url
+//        // remember to dispatch on main in case of a @State change
+//    }
     
     func actionBrowseIpa(_ fileType: SCFileType) -> Void {
         

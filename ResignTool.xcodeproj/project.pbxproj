@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1E22FD4C239A4EE000D94705 /* RTMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E22FD4B239A4EE000D94705 /* RTMainViewController.swift */; };
-		1E22FD4E239A592700D94705 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E22FD4D239A592700D94705 /* MainView.swift */; };
 		1E34B4EA2390F8810056F45A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E34B4E92390F8810056F45A /* AppDelegate.swift */; };
 		1E34B4EC2390F8810056F45A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E34B4EB2390F8810056F45A /* ContentView.swift */; };
 		1E34B4EE2390F8830056F45A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4ED2390F8830056F45A /* Assets.xcassets */; };
@@ -17,8 +15,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1E22FD4B239A4EE000D94705 /* RTMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTMainViewController.swift; sourceTree = "<group>"; };
-		1E22FD4D239A592700D94705 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		1E34B4E62390F8810056F45A /* ResignTool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ResignTool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E34B4E92390F8810056F45A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1E34B4EB2390F8810056F45A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -61,8 +57,6 @@
 			children = (
 				1E34B4E92390F8810056F45A /* AppDelegate.swift */,
 				1E34B4EB2390F8810056F45A /* ContentView.swift */,
-				1E22FD4D239A592700D94705 /* MainView.swift */,
-				1E22FD4B239A4EE000D94705 /* RTMainViewController.swift */,
 				1E34B4ED2390F8830056F45A /* Assets.xcassets */,
 				1E34B4F22390F8830056F45A /* Main.storyboard */,
 				1E34B4F52390F8830056F45A /* Info.plist */,
@@ -152,9 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E34B4EC2390F8810056F45A /* ContentView.swift in Sources */,
-				1E22FD4E239A592700D94705 /* MainView.swift in Sources */,
 				1E34B4EA2390F8810056F45A /* AppDelegate.swift in Sources */,
-				1E22FD4C239A4EE000D94705 /* RTMainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,7 +214,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -276,7 +268,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -290,6 +282,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ResignTool/ResignTool.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ResignTool/Preview Content\"";
@@ -313,6 +306,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ResignTool/ResignTool.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ResignTool/Preview Content\"";
