@@ -12,6 +12,7 @@
 		1E34B4EE2390F8830056F45A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4ED2390F8830056F45A /* Assets.xcassets */; };
 		1E34B4F12390F8830056F45A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4F02390F8830056F45A /* Preview Assets.xcassets */; };
 		1E34B4F42390F8830056F45A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4F22390F8830056F45A /* Main.storyboard */; };
+		99E6B69A239BE52A00DF2D67 /* ResignHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99E6B699239BE52A00DF2D67 /* ResignHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		1E34B4F32390F8830056F45A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1E34B4F52390F8830056F45A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1E34B4F62390F8830056F45A /* ResignTool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ResignTool.entitlements; sourceTree = "<group>"; };
+		99E6B699239BE52A00DF2D67 /* ResignHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResignHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 			children = (
 				1E34B4E92390F8810056F45A /* AppDelegate.swift */,
 				1E34B4EB2390F8810056F45A /* ContentView.swift */,
+				99E6B699239BE52A00DF2D67 /* ResignHelper.swift */,
 				1E34B4ED2390F8830056F45A /* Assets.xcassets */,
 				1E34B4F22390F8830056F45A /* Main.storyboard */,
 				1E34B4F52390F8830056F45A /* Info.plist */,
@@ -147,6 +150,7 @@
 			files = (
 				1E34B4EC2390F8810056F45A /* ContentView.swift in Sources */,
 				1E34B4EA2390F8810056F45A /* AppDelegate.swift in Sources */,
+				99E6B69A239BE52A00DF2D67 /* ResignHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

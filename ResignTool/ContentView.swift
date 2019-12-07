@@ -8,6 +8,7 @@
 
 //./resignTool -i /Users/hengyi.zhang/Desktop/重签名/家年华/原包/MerchantAideForJNH.ipa -m /Users/hengyi.zhang/Desktop/重签名/家年华/embedded.mobileprovision -v 5.0.0
 
+// 待办：生成签名记录
 
 import SwiftUI
 
@@ -25,10 +26,10 @@ struct ContentView: View, DropDelegate {
     var body: some View {
         VStack {
             HStack {
+                Text("安装包:").frame(width: 60.0, height: 30.0, alignment: .leading)
                 TextField("ipa路径", text: $ipaPath)
-                    .disabled(true)
                 Button(action: {
-                    self.actionBrowseIpa(.ipa)
+                    self.browseAction()
                 }) {
                     Text("浏览")
                         .foregroundColor(Color.black)
@@ -36,10 +37,10 @@ struct ContentView: View, DropDelegate {
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             HStack {
+                Text("描述文件:").frame(width: 60.0, height: 30.0, alignment: .leading)
                 TextField("描述文件路径", text: $mobileprovisionPath)
-                    .disabled(true)
                 Button(action: {
-                    self.actionBrowseIpa(.mobileprovision)
+                    self.browseAction()
                 }) {
                     Text("浏览")
                         .foregroundColor(Color.black)
@@ -47,13 +48,13 @@ struct ContentView: View, DropDelegate {
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             HStack {
-                Text("签名后bundleId: \(bundleId)")
+                Text("新bundleId: \(bundleId)")
                 Spacer()
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             HStack {
-                TextField("新版本号，可不填，默认之前的版本号加1", text: $bundleId)
-                Spacer()
+                Text("版本号:").frame(width: 60.0, height: 30.0, alignment: .leading)
+                TextField("默认尾号加1，非必填", text: $newVersion)
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             
@@ -74,53 +75,39 @@ struct ContentView: View, DropDelegate {
             itemProvider.loadItem(forTypeIdentifier: (kUTTypeFileURL as String), options: nil) {(item, error) in
                 if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
                     let path = url.path
-                    if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
-                        self.ipaPath = path
-                    } else if path.hasSuffix(".mobileprovision") {
-                        self.mobileprovisionPath = path
-                    }
+                    self.handFilePath(path)
                 }
             }
         }
         return true
     }
-//    itemProvider.loadItem(forTypeIdentifier: (kUTTypeFileURL as String), options: nil) {item, error in
-//        guard let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
-//        // Do something with the file url
-//        // remember to dispatch on main in case of a @State change
-//    }
     
-    func actionBrowseIpa(_ fileType: SCFileType) -> Void {
-        
+    /// 浏览文件
+    func browseAction() {
+        let allowedFileTypes = ["ipa", "IPA", "mobileprovision"]
         let openPanel = NSOpenPanel()
-        openPanel.allowsMultipleSelection = false
+        openPanel.allowsMultipleSelection = true
         openPanel.canChooseDirectories = false
         openPanel.canCreateDirectories = false
         openPanel.canChooseFiles = true
-        
-        var allowedFileTypes: Array<String> = []
-        switch fileType {
-        case .ipa:
-            allowedFileTypes = ["ipa", "IPA"]
-            break
-        case .mobileprovision:
-            allowedFileTypes = ["mobileprovision"]
-            break
-        }
-        
         openPanel.allowedFileTypes = allowedFileTypes
         openPanel.begin { (result) -> Void in
             if result == .OK {
-                let path = openPanel.url?.path ?? ""
-                switch fileType {
-                case .ipa:
-                    self.ipaPath = path
-                    break
-                case .mobileprovision:
-                    self.mobileprovisionPath = path
-                    break
+                let urls = openPanel.urls
+                for url in urls {
+                    let path = url.path
+                    self.handFilePath(path)
                 }
             }
+        }
+    }
+    
+    func handFilePath(_ path: String) {
+        if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
+            self.ipaPath = path
+        } else if path.hasSuffix(".mobileprovision") {
+            self.mobileprovisionPath = path
+            self.abstractBundleId()
         }
     }
     
@@ -146,6 +133,30 @@ struct ContentView: View, DropDelegate {
             alert.beginSheetModal(for: window, completionHandler: nil)
         } else {
             alert.runModal()
+        }
+    }
+    
+    /// 提取bundle id
+    func abstractBundleId() {
+        let mobileprovisionData = ResignHelper.runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", mobileprovisionPath])
+        
+        do {
+            let datasourceDictionary = try PropertyListSerialization.propertyList(from: mobileprovisionData, options: [], format: nil)
+            
+            if let dict = datasourceDictionary as? Dictionary<String, Any> {
+                let Entitlements = dict["Entitlements"] as? Dictionary<String, Any>
+                if let entitlementsDict = Entitlements {
+                    let applicationIdentifier = entitlementsDict["application-identifier"] as? String
+                    if let appIdStr = applicationIdentifier {
+                        var arr = appIdStr.split(separator: ".")
+                        arr.removeFirst()
+                        let appId = arr.joined(separator: ".")
+                        self.bundleId = appId
+                    }
+                }
+            }
+        } catch {
+            print(error)
         }
     }
 }
