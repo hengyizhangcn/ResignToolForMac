@@ -118,6 +118,11 @@ struct ContentView: View, DropDelegate {
             showAlertWith(title: nil, message: "请指定描述文件", style: .critical)
         } else {
             //开始签名
+            let resignTool = ResignTool()
+            resignTool.ipaPath = ipaPath
+            resignTool.mobileprovisionPath = mobileprovisionPath
+            resignTool.bundleId = bundleId
+            resignTool.resignAction()
         }
     }
     
@@ -148,7 +153,9 @@ struct ContentView: View, DropDelegate {
                 if let entitlementsDict = Entitlements {
                     let applicationIdentifier = entitlementsDict["application-identifier"] as? String
                     if let appIdStr = applicationIdentifier {
+                        //去除teamId剩下的即为bundleId
                         var arr = appIdStr.split(separator: ".")
+                        //去除第一个元素teamId
                         arr.removeFirst()
                         let appId = arr.joined(separator: ".")
                         self.bundleId = appId

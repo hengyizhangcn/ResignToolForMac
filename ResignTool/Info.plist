@@ -32,5 +32,7 @@
 	<true/>
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>请允许访问下载文件夹，以更好的为您服务</string>
 </dict>
 </plist>
