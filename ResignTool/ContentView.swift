@@ -8,7 +8,9 @@
 
 //./resignTool -i /Users/hengyi.zhang/Desktop/重签名/家年华/原包/MerchantAideForJNH.ipa -m /Users/hengyi.zhang/Desktop/重签名/家年华/embedded.mobileprovision -v 5.0.0
 
-// 待办：生成签名记录
+// 待办：
+//1.生成签名记录
+//2. “Typora” would like to access files in your Desktop folder.
 
 import SwiftUI
 
@@ -18,11 +20,11 @@ enum SCFileType {
 }
 
 struct ContentView: View, DropDelegate {
-    @State var ipaPath: String = ""
-    @State var mobileprovisionPath: String = ""
-    @State var bundleId: String = ""
-    @State var newVersion: String = ""
-    @State var sliderValue: Double = 0
+    @State private var ipaPath: String = ""
+    @State private var mobileprovisionPath: String = ""
+    @State private var bundleId: String = ""
+    @State private var newVersion: String = ""
+    @State private var sliderValue: Double = 0
     private let maxValue: Double = 10
     
     var body: some View {
