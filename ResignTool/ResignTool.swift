@@ -118,20 +118,10 @@ class ResignTool {
         
         //unzip .ipa file to the directory the same with ipaPath
         // because xcrun cannot be used within an App Sandbox.
-        
-        let IPADirectory = "/Downloads/Payload"
+        // close sandbox
         
         ResignHelper.runCommand(launchPath: "/usr/bin/unzip", arguments: [ipaPath!])
         
-        let manager = FileManager.default
-        let currentDirectoryPath = manager.currentDirectoryPath
-
-        let urlForDocument = manager.urls( for: .downloadsDirectory, in:.userDomainMask)
-        let url = urlForDocument[0]
-        
-        copyFile(fpath: "\(currentDirectoryPath)/Payload", tpath: "\(url)Payload")
-        
-        return
         //codesign -d --entitlements - SmartHeda.app
         
         //abstract entitlement

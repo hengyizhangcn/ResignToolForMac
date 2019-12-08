@@ -3,4 +3,6 @@
 ## 1.xcrun: error: cannot be used within an App Sandbox.
 意思是，不能在应用的沙盒中调用xcrun命令
 参考：https://forums.developer.apple.com/thread/73554
-## 2
+解决：关闭沙盒即可！
+## 2.SecStaticCode: verification failed (trust result 6, error -2147409652)
+
