@@ -22,6 +22,8 @@ struct ContentView: View, DropDelegate {
     @State var mobileprovisionPath: String = ""
     @State var bundleId: String = ""
     @State var newVersion: String = ""
+    @State var sliderValue: Double = 0
+    private let maxValue: Double = 10
     
     var body: some View {
         VStack {
@@ -65,6 +67,12 @@ struct ContentView: View, DropDelegate {
                     Text("重签名")
                         .foregroundColor(Color.black)
                 }
+            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
+            HStack {
+                ProgressBar(value: $sliderValue,
+                        maxValue: self.maxValue,
+                        foregroundColor: .green)
+                .frame(height: 5)
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
         }.onDrop(of: [(kUTTypeFileURL as String)], delegate: self)
     }
@@ -122,7 +130,10 @@ struct ContentView: View, DropDelegate {
             resignTool.ipaPath = ipaPath
             resignTool.mobileprovisionPath = mobileprovisionPath
             resignTool.bundleId = bundleId
-            resignTool.resignAction()
+            resignTool.resignAction {(step) in
+                self.sliderValue = Double(step)
+                print(step)
+            }
         }
     }
     

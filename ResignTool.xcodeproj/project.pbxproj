@@ -14,6 +14,7 @@
 		1E34B4F42390F8830056F45A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4F22390F8830056F45A /* Main.storyboard */; };
 		99E6B69A239BE52A00DF2D67 /* ResignHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99E6B699239BE52A00DF2D67 /* ResignHelper.swift */; };
 		99E6B69C239C907700DF2D67 /* ResignTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99E6B69B239C907700DF2D67 /* ResignTool.swift */; };
+		99E6B69F239CB53D00DF2D67 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99E6B69E239CB53D00DF2D67 /* ProgressBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		99E6B699239BE52A00DF2D67 /* ResignHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResignHelper.swift; sourceTree = "<group>"; };
 		99E6B69B239C907700DF2D67 /* ResignTool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResignTool.swift; sourceTree = "<group>"; };
 		99E6B69D239CA19100DF2D67 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		99E6B69E239CB53D00DF2D67 /* ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 				1E34B4EB2390F8810056F45A /* ContentView.swift */,
 				99E6B69B239C907700DF2D67 /* ResignTool.swift */,
 				99E6B699239BE52A00DF2D67 /* ResignHelper.swift */,
+				99E6B69E239CB53D00DF2D67 /* ProgressBar.swift */,
 				99E6B69D239CA19100DF2D67 /* README.md */,
 				1E34B4ED2390F8830056F45A /* Assets.xcassets */,
 				1E34B4F22390F8830056F45A /* Main.storyboard */,
@@ -156,6 +159,7 @@
 				1E34B4EC2390F8810056F45A /* ContentView.swift in Sources */,
 				1E34B4EA2390F8810056F45A /* AppDelegate.swift in Sources */,
 				99E6B69C239C907700DF2D67 /* ResignTool.swift in Sources */,
+				99E6B69F239CB53D00DF2D67 /* ProgressBar.swift in Sources */,
 				99E6B69A239BE52A00DF2D67 /* ResignHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

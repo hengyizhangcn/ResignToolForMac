@@ -112,15 +112,19 @@ class ResignTool {
         }
     }
     
-    func resignAction() {
+    func resignAction(_ actionProgress: ((Int) -> ())?) {
         //remove middle files and directionary
         ResignHelper.clearMiddleProducts()
+        
+        actionProgress?(1)
         
         //unzip .ipa file to the directory the same with ipaPath
         // because xcrun cannot be used within an App Sandbox.
         // close sandbox
         
         ResignHelper.runCommand(launchPath: "/usr/bin/unzip", arguments: [ipaPath!])
+        
+        actionProgress?(2)
         
         //codesign -d --entitlements - SmartHeda.app
         
@@ -129,6 +133,8 @@ class ResignTool {
         
         //abstract plist for app
         ResignHelper.abstractPlist(appPath, mobileprovisionPath, "entitlements.plist")
+        
+        actionProgress?(3)
         
         let componentsList = ResignHelper.findComponentsList(appPath)
         
@@ -139,31 +145,53 @@ class ResignTool {
             //abstract plist for callkit
             ResignHelper.abstractPlist(callKitAppexPath, nil, callKitPlistFilePath);
             
+            actionProgress?(4)
+            
             //resign appex
             ResignHelper.replaceProvisionAndResign(callKitAppexPath, callKitMobileProvision, callKitPlistFilePath)
+
+            
+            actionProgress?(5)
         } else if componentsList != nil {
             for path in componentsList! {
                 let filePath = appPath + "/Frameworks/" + (path as! String)
                 
                 ResignHelper.resignDylibs(filePath, mobileprovisionPath, "entitlements.plist")
+                
+                actionProgress?(4)
             }
         }
         
         //set the app version
         ResignHelper.configurefreshVersion(newVersion, bundleId, appPath)
         
+        
+        actionProgress?(6)
+        
         //resign app
         ResignHelper.replaceProvisionAndResign(appPath, mobileprovisionPath, "entitlements.plist")
         
+        
+        actionProgress?(7)
+        
         //codesign -vv -d SmartHeda.app
         ResignHelper.runCommand(launchPath: "/usr/bin/codesign", arguments: ["-vv", "-d", appPath])
+        
+        
+        actionProgress?(8)
         
         //repacked app
         //zip -r SmartHeda.ipa Payload/
         ResignHelper.repackApp(ipaPath)
         
+        
+        actionProgress?(9)
+        
         //remove middle files and directionary
         ResignHelper.clearMiddleProducts()
+        
+        
+        actionProgress?(10)
         
         print("Done!")
     }
