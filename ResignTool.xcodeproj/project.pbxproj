@@ -12,6 +12,7 @@
 		1E34B4EE2390F8830056F45A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4ED2390F8830056F45A /* Assets.xcassets */; };
 		1E34B4F12390F8830056F45A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4F02390F8830056F45A /* Preview Assets.xcassets */; };
 		1E34B4F42390F8830056F45A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1E34B4F22390F8830056F45A /* Main.storyboard */; };
+		1E6EBC5C23BA0B7000278DEE /* ExternalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6EBC5B23BA0B7000278DEE /* ExternalData.swift */; };
 		99E6B69A239BE52A00DF2D67 /* ResignHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99E6B699239BE52A00DF2D67 /* ResignHelper.swift */; };
 		99E6B69C239C907700DF2D67 /* ResignTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99E6B69B239C907700DF2D67 /* ResignTool.swift */; };
 		99E6B69F239CB53D00DF2D67 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99E6B69E239CB53D00DF2D67 /* ProgressBar.swift */; };
@@ -26,6 +27,7 @@
 		1E34B4F32390F8830056F45A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1E34B4F52390F8830056F45A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1E34B4F62390F8830056F45A /* ResignTool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ResignTool.entitlements; sourceTree = "<group>"; };
+		1E6EBC5B23BA0B7000278DEE /* ExternalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalData.swift; sourceTree = "<group>"; };
 		99E6B699239BE52A00DF2D67 /* ResignHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResignHelper.swift; sourceTree = "<group>"; };
 		99E6B69B239C907700DF2D67 /* ResignTool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResignTool.swift; sourceTree = "<group>"; };
 		99E6B69D239CA19100DF2D67 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -67,6 +69,7 @@
 				99E6B69B239C907700DF2D67 /* ResignTool.swift */,
 				99E6B699239BE52A00DF2D67 /* ResignHelper.swift */,
 				99E6B69E239CB53D00DF2D67 /* ProgressBar.swift */,
+				1E6EBC5B23BA0B7000278DEE /* ExternalData.swift */,
 				99E6B69D239CA19100DF2D67 /* README.md */,
 				1E34B4ED2390F8830056F45A /* Assets.xcassets */,
 				1E34B4F22390F8830056F45A /* Main.storyboard */,
@@ -156,6 +159,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E6EBC5C23BA0B7000278DEE /* ExternalData.swift in Sources */,
 				1E34B4EC2390F8810056F45A /* ContentView.swift in Sources */,
 				1E34B4EA2390F8810056F45A /* AppDelegate.swift in Sources */,
 				99E6B69C239C907700DF2D67 /* ResignTool.swift in Sources */,

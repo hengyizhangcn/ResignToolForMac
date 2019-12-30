@@ -25,12 +25,14 @@ struct ContentView: View, DropDelegate {
     @State private var bundleId: String = ""
     @State private var newVersion: String = ""
     @State private var sliderValue: Double = 0
+    @State private var pluginInfoDict: [String: String] = [:]
+    @EnvironmentObject var externalData: ExternalData
     private let maxValue: Double = 10
     
     var body: some View {
         VStack {
             HStack {
-                Text("安装包:").frame(width: 60.0, height: 30.0, alignment: .leading)
+                Text("安装包:").frame(width: 160.0, height: 30.0, alignment: .trailing)
                 TextField("ipa路径", text: $ipaPath)
                 Button(action: {
                     self.browseAction()
@@ -41,7 +43,7 @@ struct ContentView: View, DropDelegate {
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             HStack {
-                Text("描述文件:").frame(width: 60.0, height: 30.0, alignment: .leading)
+                Text("描述文件:").frame(width: 160.0, height: 30.0, alignment: .trailing)
                 TextField("描述文件路径", text: $mobileprovisionPath)
                 Button(action: {
                     self.browseAction()
@@ -52,15 +54,22 @@ struct ContentView: View, DropDelegate {
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             HStack {
-                Text("新bundleId: \(bundleId)")
+                Text("新bundleId:").frame(width: 160.0, height: 30.0, alignment: .trailing)
+                Text("\(bundleId)")
                 Spacer()
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             HStack {
-                Text("版本号:").frame(width: 60.0, height: 30.0, alignment: .leading)
+                Text("版本号:").frame(width: 160.0, height: 30.0, alignment: .trailing)
                 TextField("默认尾号加1，非必填", text: $newVersion)
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
+//            ForEach(externalData.keys, id:\.self) { key in
+//                HStack {
+//                    Text("\(key):").frame(width: 160.0, height: 30.0, alignment: .trailing)
+//                    TextField("默认尾号加1，非必填", text: self.externalData.binding(for: key))
+//                }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
+//            }
             
             HStack {
                 Button(action: {
@@ -115,6 +124,7 @@ struct ContentView: View, DropDelegate {
     func handFilePath(_ path: String) {
         if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
             self.ipaPath = path
+            self.abstractPlugins()
         } else if path.hasSuffix(".mobileprovision") {
             self.mobileprovisionPath = path
             self.abstractBundleId()
@@ -122,6 +132,7 @@ struct ContentView: View, DropDelegate {
     }
     
     func resignAction() {
+        print(self.externalData)
         if ipaPath.count == 0 {
             showAlertWith(title: nil, message: "请指定IPA文件", style: .critical)
         } else if mobileprovisionPath.count == 0 {
@@ -179,4 +190,49 @@ struct ContentView: View, DropDelegate {
             print(error)
         }
     }
+    
+    /// 提取插件 frameworks等
+    func abstractPlugins() {
+        
+        //remove middle files and directionary
+        ResignHelper.clearMiddleProducts()
+        
+        //unzip .ipa file to the directory the same with ipaPath
+        // because xcrun cannot be used within an App Sandbox.
+        // close sandbox
+        
+        ResignHelper.runCommand(launchPath: "/usr/bin/unzip", arguments: [self.ipaPath])
+        
+        let manager = FileManager.default
+        do {
+            var appPath = ""
+            let contents = try manager.contentsOfDirectory(atPath: "Payload")
+            for fileName in contents {
+                if fileName.contains(".app") {
+                    appPath = manager.currentDirectoryPath + "/Payload/" + fileName
+                }
+            }
+            
+            let frameworks = try manager.contentsOfDirectory(atPath: appPath + "/Frameworks")
+            for fileName in frameworks {
+//                let frameworkPath = manager.currentDirectoryPath + "/Frameworks/" + fileName
+                pluginInfoDict[fileName] = ""
+            }
+            
+            let plugIns = try manager.contentsOfDirectory(atPath: appPath + "/PlugIns")
+            for fileName in plugIns {
+//                let plugInPath = manager.currentDirectoryPath + "/PlugIns/" + fileName
+                pluginInfoDict[fileName] = ""
+            }
+        } catch {
+            print("Error occurs")
+        }
+        
+        print("pluginInfoDict: ", pluginInfoDict)
+    }
 }
+
+
+//参考文档
+//1.How do I bind a SwiftUI element to a value in a Dictionary?
+//https://stackoverflow.com/questions/56978746/how-do-i-bind-a-swiftui-element-to-a-value-in-a-dictionary
