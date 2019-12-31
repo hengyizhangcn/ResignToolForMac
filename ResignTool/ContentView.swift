@@ -20,13 +20,15 @@ enum SCFileType {
 }
 
 struct ContentView: View, DropDelegate {
-    @State private var ipaPath: String = ""
-    @State private var mobileprovisionPath: String = ""
-    @State private var bundleId: String = ""
-    @State private var newVersion: String = ""
+    @State private var ipaPath = ""
+    @State private var mobileprovisionPath = ""
+    @State private var bundleId = ""
+    @State private var newVersion = ""
     @State private var sliderValue: Double = 0
     @State private var pluginInfoDict: [String: String] = [:]
     @EnvironmentObject var externalData: ExternalData
+    @State private var appexName = ""
+    @State private var appexProvisionPath = ""
     private let maxValue: Double = 10
     
     var body: some View {
@@ -42,34 +44,44 @@ struct ContentView: View, DropDelegate {
                 }
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
-            HStack {
-                Text("描述文件:").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                TextField("描述文件路径", text: $mobileprovisionPath)
-                Button(action: {
-                    self.browseAction()
-                }) {
-                    Text("浏览")
-                        .foregroundColor(Color.black)
-                }
-            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
-            
-            HStack {
-                Text("新bundleId:").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                Text("\(bundleId)")
-                Spacer()
-            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+            VStack {
+                HStack {
+                    Text("描述文件:").frame(width: 160.0, height: 30.0, alignment: .trailing)
+                    TextField("描述文件路径", text: $mobileprovisionPath)
+                    Button(action: {
+                        self.browseAction()
+                    }) {
+                        Text("浏览")
+                            .foregroundColor(Color.black)
+                    }
+                }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+                
+                HStack {
+                    Text("对应bundleId:").frame(width: 160.0, height: 10.0, alignment: .trailing)
+                    Text("\(bundleId)")
+                    Spacer()
+                }.padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
+                    .font(Font.system(size: 10))
+            }
             
             HStack {
                 Text("版本号:").frame(width: 160.0, height: 30.0, alignment: .trailing)
                 TextField("默认尾号加1，非必填", text: $newVersion)
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
-//            ForEach(externalData.keys, id:\.self) { key in
-//                HStack {
-//                    Text("\(key):").frame(width: 160.0, height: 30.0, alignment: .trailing)
-//                    TextField("默认尾号加1，非必填", text: self.externalData.binding(for: key))
-//                }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
-//            }
+            HStack {
+                if (appexName.count > 0) {
+                    Text("\(appexName):").frame(width: 160.0, height: 30.0, alignment: .trailing)
+                    TextField("描述文件路径", text: $appexProvisionPath)
+                    Button(action: {
+                        self.browseAppexMobileProvision()
+                    }) {
+                        Text("浏览")
+                            .foregroundColor(Color.black)
+                    }
+                }
+            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+            
             
             HStack {
                 Button(action: {
@@ -121,6 +133,26 @@ struct ContentView: View, DropDelegate {
         }
     }
     
+    /// 浏览文件
+    func browseAppexMobileProvision() {
+        let allowedFileTypes = ["mobileprovision"]
+        let openPanel = NSOpenPanel()
+        openPanel.allowsMultipleSelection = false
+        openPanel.canChooseDirectories = false
+        openPanel.canCreateDirectories = false
+        openPanel.canChooseFiles = true
+        openPanel.allowedFileTypes = allowedFileTypes
+        openPanel.begin { (result) -> Void in
+            if result == .OK {
+                let urls = openPanel.urls
+                for url in urls {
+                    let path = url.path
+                    self.appexProvisionPath = path
+                }
+            }
+        }
+    }
+    
     func handFilePath(_ path: String) {
         if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
             self.ipaPath = path
@@ -132,7 +164,6 @@ struct ContentView: View, DropDelegate {
     }
     
     func resignAction() {
-        print(self.externalData)
         if ipaPath.count == 0 {
             showAlertWith(title: nil, message: "请指定IPA文件", style: .critical)
         } else if mobileprovisionPath.count == 0 {
@@ -222,7 +253,9 @@ struct ContentView: View, DropDelegate {
             let plugIns = try manager.contentsOfDirectory(atPath: appPath + "/PlugIns")
             for fileName in plugIns {
 //                let plugInPath = manager.currentDirectoryPath + "/PlugIns/" + fileName
-                pluginInfoDict[fileName] = ""
+                if fileName.contains(".appex") {
+                    appexName = fileName
+                }
             }
         } catch {
             print("Error occurs")

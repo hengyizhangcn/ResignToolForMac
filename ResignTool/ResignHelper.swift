@@ -38,7 +38,7 @@ public class ResignHelper {
         
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "mobileprovision.plist"])
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "Payload"])
-        runCommand(launchPath: "/bin/rm", arguments: ["-rf", "entitlements.plist"])
+//        runCommand(launchPath: "/bin/rm", arguments: ["-rf", "entitlements.plist"])
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "AppThinning.plist"]) //for thin if exists
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "CallFunction.plist"]) //for callkit if exists
     }

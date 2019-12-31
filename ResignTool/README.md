@@ -23,3 +23,7 @@ struct对象分配在栈中，class对象在堆中
 参考链接：
 https://www.cnblogs.com/beckwang0912/p/8508299.html
 https://stackoverflow.com/questions/24232799/why-choose-struct-over-class
+
+
+待办：
+1.存在两个证书如何提示用户删除？
