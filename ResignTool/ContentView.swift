@@ -174,6 +174,7 @@ struct ContentView: View, DropDelegate {
             resignTool.ipaPath = ipaPath
             resignTool.mobileprovisionPath = mobileprovisionPath
             resignTool.bundleId = bundleId
+            resignTool.appexInfoArray = [["appexName":appexName, "appexProvisionPath":appexProvisionPath]]
             resignTool.resignAction {(step) in
                 self.sliderValue = Double(step)
                 print(step)

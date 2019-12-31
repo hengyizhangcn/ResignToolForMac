@@ -26,6 +26,7 @@ class ResignTool {
     var mobileprovisionPath: String?
     var newVersion: String?
     var callKitMobileProvision: String?
+    var appexInfoArray: [[String: String]]?
     var bundleId: String?
     
     /// enumerate Payload directory, find out the .app file
@@ -152,7 +153,8 @@ class ResignTool {
 
             
             actionProgress?(5)
-        } else if componentsList != nil {
+        }
+        if componentsList != nil {
             for path in componentsList! {
                 let filePath = appPath + "/Frameworks/" + (path as! String)
                 
