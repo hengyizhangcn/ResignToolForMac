@@ -38,9 +38,9 @@ public class ResignHelper {
         
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "mobileprovision.plist"])
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "Payload"])
-//        runCommand(launchPath: "/bin/rm", arguments: ["-rf", "entitlements.plist"])
+        runCommand(launchPath: "/bin/rm", arguments: ["-rf", "entitlements.plist"])
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "AppThinning.plist"]) //for thin if exists
-        runCommand(launchPath: "/bin/rm", arguments: ["-rf", "CallFunction.plist"]) //for callkit if exists
+        runCommand(launchPath: "/bin/rm", arguments: ["-rf", "appexEntitlements.plist"]) //for appexEntitlements if exists
     }
     
     /// abstract plist for app like framework, extension, appex, etc
@@ -50,7 +50,7 @@ public class ResignHelper {
     ///   - appPath: the appPath can be framework, extension, appex, etc
     ///   - mobileprovisionPath: the path of mobileprovision
     ///   - plistFilePath: target plist file
-    class func abstractPlist(_ appPath: String, _ mobileprovisionPathTemp: String?, _ plistFilePath: String) {
+    class func abstractPlist(_ appPath: String, _ mobileprovisionPathTemp: String?, _ entitlementsFilePath: String) {
         
         if mobileprovisionPathTemp != nil {
             let mobileprovisionData = runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", mobileprovisionPathTemp!]);
@@ -71,7 +71,7 @@ public class ResignHelper {
                 let EntitlementsDict = plistDict["Entitlements"]
 
                 
-                let plistFilePathUrl = URL.init(fileURLWithPath: plistFilePath)
+                let plistFilePathUrl = URL.init(fileURLWithPath: entitlementsFilePath)
                 
                 if let plistOutputStream = OutputStream.init(toFileAtPath: plistFilePathUrl.path, append: false) {
                     
@@ -80,7 +80,7 @@ public class ResignHelper {
                     plistOutputStream.open()
                     
                     //write the new plist content to file
-                    PropertyListSerialization.writePropertyList(EntitlementsDict, to: plistOutputStream, format: PropertyListSerialization.PropertyListFormat.xml, options: 0, error: nil)
+                    PropertyListSerialization.writePropertyList(EntitlementsDict!, to: plistOutputStream, format: PropertyListSerialization.PropertyListFormat.xml, options: 0, error: nil)
                 }
             } catch {
                 print(error)
@@ -88,9 +88,9 @@ public class ResignHelper {
             
         } else {
 
-            runCommand(launchPath: "/usr/bin/codesign", arguments: ["-d", "--entitlements", plistFilePath, appPath])
+            runCommand(launchPath: "/usr/bin/codesign", arguments: ["-d", "--entitlements", entitlementsFilePath, appPath])
             do {
-                let fileUrl = URL.init(fileURLWithPath: plistFilePath)
+                let fileUrl = URL.init(fileURLWithPath: entitlementsFilePath)
                 var entitleData = try Data.init(contentsOf: fileUrl)
                 entitleData.removeSubrange(0..<8) //first eight characters are unknown, should be removed
                 
@@ -162,7 +162,7 @@ public class ResignHelper {
     ///   - appPath: the appPath can be framework, extension, appex, etc
     ///   - provisionPath: mobileprovision
     ///   - plistFilePath: plist file
-    class func replaceProvisionAndResign(_ appPath: String, _ provisionPath: String?, _ plistFilePath: String) {
+    class func replaceProvisionAndResign(_ appPath: String, _ provisionPath: String?, _ entitlementsFilePath: String) {
         var TeamName: String?
         if provisionPath != nil {
             let mobileprovisionData = runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", provisionPath!])
@@ -200,7 +200,7 @@ public class ResignHelper {
         
         //resign extension/framework/app etc.
         let teamNameCombinedStr = "iPhone Distribution: " + TeamName!
-        runCommand(launchPath: "/usr/bin/codesign", arguments: ["-fs", teamNameCombinedStr, "--entitlements", plistFilePath, appPath])
+        runCommand(launchPath: "/usr/bin/codesign", arguments: ["-fs", teamNameCombinedStr, "--entitlements", entitlementsFilePath, appPath])
     }
     
     class func resignDylibs(_ componentFile: String?, _ provisionPath: String?, _ plistFilePath: String) {
@@ -238,19 +238,17 @@ public class ResignHelper {
         }
     }
     
-    class func findComponentsList(_ tempIpaPath: String) -> Array<Any>? {
+    class func findComponentsList(_ tempIpaPath: String) -> Array<String> {
         
         let manager = FileManager.default
         let path = tempIpaPath + "/Frameworks"
         
         do {
-            let content = try manager.enumerator(atPath: path)
-            
-            print(content as Any)
-            
-            return content?.allObjects
+            let frameworks = try manager.contentsOfDirectory(atPath: path)
+            return frameworks
         } catch {
             print(error)
         }
+        return []
     }
 }

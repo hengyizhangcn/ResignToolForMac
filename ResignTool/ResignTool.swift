@@ -26,7 +26,7 @@ class ResignTool {
     var mobileprovisionPath: String?
     var newVersion: String?
     var callKitMobileProvision: String?
-    var appexInfoArray: [[String: String]]?
+    var appexInfoArray: [[String: String]] = [[:]]
     var bundleId: String?
     
     /// enumerate Payload directory, find out the .app file
@@ -115,17 +115,17 @@ class ResignTool {
     
     func resignAction(_ actionProgress: ((Int) -> ())?) {
         //remove middle files and directionary
-        ResignHelper.clearMiddleProducts()
-        
-        actionProgress?(1)
-        
-        //unzip .ipa file to the directory the same with ipaPath
-        // because xcrun cannot be used within an App Sandbox.
-        // close sandbox
-        
-        ResignHelper.runCommand(launchPath: "/usr/bin/unzip", arguments: [ipaPath!])
-        
-        actionProgress?(2)
+//        ResignHelper.clearMiddleProducts()
+//
+//        actionProgress?(1)
+//
+//        //unzip .ipa file to the directory the same with ipaPath
+//        // because xcrun cannot be used within an App Sandbox.
+//        // close sandbox
+//
+//        ResignHelper.runCommand(launchPath: "/usr/bin/unzip", arguments: [ipaPath!])
+//
+//        actionProgress?(2)
         
         //codesign -d --entitlements - SmartHeda.app
         
@@ -154,14 +154,38 @@ class ResignTool {
             
             actionProgress?(5)
         }
-        if componentsList != nil {
-            for path in componentsList! {
-                let filePath = appPath + "/Frameworks/" + (path as! String)
+        
+        for appexInfoDict in appexInfoArray {
+            if let appexName = appexInfoDict["appexName"],
+                let appexProvisionPath = appexInfoDict["appexProvisionPath"] {
                 
-                ResignHelper.resignDylibs(filePath, mobileprovisionPath, "entitlements.plist")
+                let appexEntitlementsFilePath = "appexEntitlements.plist"
+                let appexPath = appPath + "/PlugIns/" + appexName
+                print(appexPath)
+                print(appexProvisionPath)
+                
+                //abstract plist for callkit
+                ResignHelper.abstractPlist(appexPath, appexProvisionPath, appexEntitlementsFilePath);
                 
                 actionProgress?(4)
+                
+                //resign appex
+                ResignHelper.replaceProvisionAndResign(appexPath, appexProvisionPath, appexEntitlementsFilePath)
+
+                
+                actionProgress?(5)
             }
+        }
+        
+        for path in componentsList {
+            
+            print("path:", path)
+            
+            let filePath = appPath + "/Frameworks/" + path
+            
+            ResignHelper.resignDylibs(filePath, mobileprovisionPath, "entitlements.plist")
+            
+            actionProgress?(4)
         }
         
         //set the app version

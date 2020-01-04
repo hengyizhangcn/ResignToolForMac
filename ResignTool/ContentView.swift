@@ -26,7 +26,6 @@ struct ContentView: View, DropDelegate {
     @State private var newVersion = ""
     @State private var sliderValue: Double = 0
     @State private var pluginInfoDict: [String: String] = [:]
-    @EnvironmentObject var externalData: ExternalData
     @State private var appexName = ""
     @State private var appexProvisionPath = ""
     private let maxValue: Double = 10
@@ -91,12 +90,12 @@ struct ContentView: View, DropDelegate {
                         .foregroundColor(Color.black)
                 }
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
-            HStack {
-                ProgressBar(value: $sliderValue,
-                        maxValue: self.maxValue,
-                        foregroundColor: .green)
-                .frame(height: 5)
-            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
+//            HStack {
+//                ProgressBar(value: $sliderValue,
+//                        maxValue: self.maxValue,
+//                        foregroundColor: .green)
+//                .frame(height: 5)
+//            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
         }.onDrop(of: [(kUTTypeFileURL as String)], delegate: self)
     }
     
