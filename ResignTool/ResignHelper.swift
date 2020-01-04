@@ -115,7 +115,7 @@ public class ResignHelper {
             //read plist file to dictionary
             var plistDict = try PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: nil) as! [String: Any]
             
-            if refreshVersion == nil,
+            if refreshVersion == nil || refreshVersion?.count == 0,
                 let shortVersion = plistDict["CFBundleShortVersionString"] as? String{
                 
                 var versionArray = shortVersion.components(separatedBy: ".")

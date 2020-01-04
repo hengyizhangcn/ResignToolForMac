@@ -28,6 +28,7 @@ struct ContentView: View, DropDelegate {
     @State private var pluginInfoDict: [String: String] = [:]
     @State private var appexName = ""
     @State private var appexProvisionPath = ""
+    @State private var appexBundleId = ""
     private let maxValue: Double = 10
     
     var body: some View {
@@ -55,12 +56,15 @@ struct ContentView: View, DropDelegate {
                     }
                 }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
                 
-                HStack {
-                    Text("对应bundleId:").frame(width: 160.0, height: 10.0, alignment: .trailing)
-                    Text("\(bundleId)")
-                    Spacer()
-                }.padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
-                    .font(Font.system(size: 10))
+                if (mobileprovisionPath.count > 0) {
+                    HStack {
+                        Text("对应bundleId:").frame(width: 160.0, height: 10.0, alignment: .trailing)
+                        Text("\(bundleId)")
+                        Spacer()
+                    }.padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
+                        .font(Font.system(size: 8))
+                }
+                
             }
             
             HStack {
@@ -68,18 +72,28 @@ struct ContentView: View, DropDelegate {
                 TextField("默认尾号加1，非必填", text: $newVersion)
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
-            HStack {
+            VStack {
                 if (appexName.count > 0) {
-                    Text("\(appexName):").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                    TextField("描述文件路径", text: $appexProvisionPath)
-                    Button(action: {
-                        self.browseAppexMobileProvision()
-                    }) {
-                        Text("浏览")
-                            .foregroundColor(Color.black)
+                    HStack {
+                        Text("\(appexName):").frame(width: 160.0, height: 30.0, alignment: .trailing)
+                        TextField("描述文件路径", text: $appexProvisionPath)
+                        Button(action: {
+                            self.browseAppexMobileProvision()
+                        }) {
+                            Text("浏览")
+                                .foregroundColor(Color.black)
+                        }
+                    }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+                    if (appexProvisionPath.count > 0) {
+                        HStack {
+                            Text("对应bundleId:").frame(width: 160.0, height: 10.0, alignment: .trailing)
+                            Text("\(appexBundleId)")
+                            Spacer()
+                        }.padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15))
+                            .font(Font.system(size: 8))
                     }
                 }
-            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+            }
             
             
             HStack {
@@ -147,6 +161,7 @@ struct ContentView: View, DropDelegate {
                 for url in urls {
                     let path = url.path
                     self.appexProvisionPath = path
+                    self.appexBundleId = self.abstractBundleId(self.appexProvisionPath)
                 }
             }
         }
@@ -155,10 +170,14 @@ struct ContentView: View, DropDelegate {
     func handFilePath(_ path: String) {
         if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
             self.ipaPath = path
-            self.abstractPlugins()
+            DispatchQueue.global().async {
+                self.abstractPlugins()
+            }
         } else if path.hasSuffix(".mobileprovision") {
             self.mobileprovisionPath = path
-            self.abstractBundleId()
+            DispatchQueue.global().async {
+                self.bundleId = self.abstractBundleId(self.mobileprovisionPath)
+            }
         }
     }
     
@@ -173,7 +192,10 @@ struct ContentView: View, DropDelegate {
             resignTool.ipaPath = ipaPath
             resignTool.mobileprovisionPath = mobileprovisionPath
             resignTool.bundleId = bundleId
-            resignTool.appexInfoArray = [["appexName":appexName, "appexProvisionPath":appexProvisionPath]]
+            resignTool.appexInfoArray = [["appexName":appexName,
+                                          "appexProvisionPath":appexProvisionPath,
+                                          "appexBundleId":appexBundleId]]
+            resignTool.newVersion = newVersion
             resignTool.resignAction {(step) in
                 self.sliderValue = Double(step)
                 print(step)
@@ -197,8 +219,8 @@ struct ContentView: View, DropDelegate {
     }
     
     /// 提取bundle id
-    func abstractBundleId() {
-        let mobileprovisionData = ResignHelper.runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", mobileprovisionPath])
+    func abstractBundleId(_ tempMobileprovisionPath: String) -> String {
+        let mobileprovisionData = ResignHelper.runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", tempMobileprovisionPath])
         
         do {
             let datasourceDictionary = try PropertyListSerialization.propertyList(from: mobileprovisionData, options: [], format: nil)
@@ -213,13 +235,14 @@ struct ContentView: View, DropDelegate {
                         //去除第一个元素teamId
                         arr.removeFirst()
                         let appId = arr.joined(separator: ".")
-                        self.bundleId = appId
+                        return appId
                     }
                 }
             }
         } catch {
             print(error)
         }
+        return ""
     }
     
     /// 提取插件 frameworks等

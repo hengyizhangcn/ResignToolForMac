@@ -43,10 +43,9 @@ class ResignTool {
                 }
             }
             print("The .app file not exist!")
-            terminate()
         } catch {
             print("Error occurs")
-            terminate()
+            return ""
         }
         return ""
     }
@@ -115,22 +114,27 @@ class ResignTool {
     
     func resignAction(_ actionProgress: ((Int) -> ())?) {
         //remove middle files and directionary
-//        ResignHelper.clearMiddleProducts()
-//
-//        actionProgress?(1)
-//
-//        //unzip .ipa file to the directory the same with ipaPath
-//        // because xcrun cannot be used within an App Sandbox.
-//        // close sandbox
-//
-//        ResignHelper.runCommand(launchPath: "/usr/bin/unzip", arguments: [ipaPath!])
-//
-//        actionProgress?(2)
+        var appPath = enumeratePayloadApp()
+        
+        if appPath.count == 0 {
+            ResignHelper.clearMiddleProducts()
+            
+            actionProgress?(1)
+            
+            //unzip .ipa file to the directory the same with ipaPath
+            // because xcrun cannot be used within an App Sandbox.
+            // close sandbox
+            
+            ResignHelper.runCommand(launchPath: "/usr/bin/unzip", arguments: [ipaPath!])
+            
+            actionProgress?(2)
+            
+            appPath = enumeratePayloadApp()
+        }
         
         //codesign -d --entitlements - SmartHeda.app
         
         //abstract entitlement
-        let appPath = enumeratePayloadApp()
         
         //abstract plist for app
         ResignHelper.abstractPlist(appPath, mobileprovisionPath, "entitlements.plist")
@@ -157,6 +161,7 @@ class ResignTool {
         
         for appexInfoDict in appexInfoArray {
             if let appexName = appexInfoDict["appexName"],
+                let appexBundleId = appexInfoDict["appexBundleId"],
                 let appexProvisionPath = appexInfoDict["appexProvisionPath"] {
                 
                 let appexEntitlementsFilePath = "appexEntitlements.plist"
@@ -168,6 +173,9 @@ class ResignTool {
                 ResignHelper.abstractPlist(appexPath, appexProvisionPath, appexEntitlementsFilePath);
                 
                 actionProgress?(4)
+                
+                //set the app version
+                ResignHelper.configurefreshVersion(newVersion, appexBundleId, appexPath)
                 
                 //resign appex
                 ResignHelper.replaceProvisionAndResign(appexPath, appexProvisionPath, appexEntitlementsFilePath)
