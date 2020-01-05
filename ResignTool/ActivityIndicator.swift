@@ -9,7 +9,7 @@
 import SwiftUI
 import AppKit
 
-/// 自定义菊花批示
+/// 自定义菊花提示
 struct ActivityIndicator: NSViewRepresentable {
     
     /// 是否 显示动画

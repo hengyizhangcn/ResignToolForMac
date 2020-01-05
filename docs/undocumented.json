@@ -1,0 +1,117 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/AppDelegate.swift",
+      "line": 13,
+      "symbol": "AppDelegate",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/AppDelegate.swift",
+      "line": 15,
+      "symbol": "AppDelegate.window",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/AppDelegate.swift",
+      "line": 18,
+      "symbol": "AppDelegate.applicationDidFinishLaunching(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/AppDelegate.swift",
+      "line": 32,
+      "symbol": "AppDelegate.applicationWillTerminate(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ContentView.swift",
+      "line": 17,
+      "symbol": "SCFileType",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ContentView.swift",
+      "line": 18,
+      "symbol": "SCFileType.ipa",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ContentView.swift",
+      "line": 19,
+      "symbol": "SCFileType.mobileprovision",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ContentView.swift",
+      "line": 44,
+      "symbol": "ContentView.maxValue",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ExternalData.swift",
+      "line": 12,
+      "symbol": "ExternalData",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ExternalData.swift",
+      "line": 13,
+      "symbol": "ExternalData.didChange",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ExternalData.swift",
+      "line": 15,
+      "symbol": "ExternalData.filters",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ExternalData.swift",
+      "line": 21,
+      "symbol": "ExternalData.init()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ExternalData.swift",
+      "line": 26,
+      "symbol": "ExternalData.keys",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ExternalData.swift",
+      "line": 30,
+      "symbol": "ExternalData.binding(for:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ProgressBar.swift",
+      "line": 25,
+      "symbol": "ProgressBar.init(value:maxValue:backgroundEnabled:backgroundColor:foregroundColor:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/zhy/Documents/github/ResignToolForMac/ResignTool/ResignTool.swift",
+      "line": 13,
+      "symbol": "ResignTool.help",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/zhy/Documents/github/ResignToolForMac"
+}
