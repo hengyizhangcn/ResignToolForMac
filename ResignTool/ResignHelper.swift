@@ -273,8 +273,9 @@ public class ResignHelper {
         return []
     }
     
-    /// 提取bundle id
-    class func abstractBundleId(_ tempMobileprovisionPath: String) -> String {
+    /// 提取bundle id， 及aps-environment
+    /// - Parameter tempMobileprovisionPath:
+    class func abstractBundleId(_ tempMobileprovisionPath: String) -> (String, String) {
         let mobileprovisionData = runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", tempMobileprovisionPath])
         
         do {
@@ -282,6 +283,8 @@ public class ResignHelper {
             
             if let dict = datasourceDictionary as? Dictionary<String, Any> {
                 let Entitlements = dict["Entitlements"] as? Dictionary<String, Any>
+                
+                var appId = "", apsEnvironment = ""
                 if let entitlementsDict = Entitlements {
                     let applicationIdentifier = entitlementsDict["application-identifier"] as? String
                     if let appIdStr = applicationIdentifier {
@@ -289,15 +292,18 @@ public class ResignHelper {
                         var arr = appIdStr.split(separator: ".")
                         //去除第一个元素teamId
                         arr.removeFirst()
-                        let appId = arr.joined(separator: ".")
-                        return appId
+                        appId = arr.joined(separator: ".")
                     }
+                    if let tempApsEnvironment = entitlementsDict["aps-environment"] as? String {
+                        apsEnvironment = tempApsEnvironment
+                    }
+                    return (appId, apsEnvironment)
                 }
             }
         } catch {
             print(error)
         }
-        return ""
+        return ("", "")
     }
     
     

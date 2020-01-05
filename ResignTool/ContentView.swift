@@ -25,7 +25,6 @@ struct ContentView: View, DropDelegate {
     @State private var bundleId = ""
     @State private var newVersion = ""
     @State private var sliderValue: Double = 0
-    @State private var pluginInfoDict: [String: String] = [:]
     @State private var appexName = ""
     @State private var appexProvisionPath = ""
     @State private var appexBundleId = ""
@@ -78,7 +77,7 @@ struct ContentView: View, DropDelegate {
                         Text("\(appexName):").frame(width: 160.0, height: 30.0, alignment: .trailing)
                         TextField("描述文件路径，非必填", text: $appexProvisionPath)
                         Button(action: {
-                            self.browseAppexMobileProvision()
+                            self.browseAction()
                         }) {
                             Text("浏览")
                         }
@@ -145,7 +144,7 @@ struct ContentView: View, DropDelegate {
         let savePanel = NSSavePanel()
         savePanel.title = "保存安装包"
         savePanel.message = "选择安装包保存的位置"
-        savePanel.nameFieldLabel = "安装包:"
+        savePanel.nameFieldLabel = "另存为:"
         savePanel.nameFieldStringValue = ipaName
         savePanel.tagNames = ["resignTool"]
         savePanel.allowedFileTypes = ["ipa", "IPA"]
@@ -182,39 +181,30 @@ struct ContentView: View, DropDelegate {
         }
     }
     
-    /// 浏览文件，单为appex设计
-    func browseAppexMobileProvision() {
-        let allowedFileTypes = ["mobileprovision"]
-        let openPanel = NSOpenPanel()
-        openPanel.allowsMultipleSelection = false
-        openPanel.canChooseDirectories = false
-        openPanel.canCreateDirectories = false
-        openPanel.canChooseFiles = true
-        openPanel.allowedFileTypes = allowedFileTypes
-        openPanel.begin { (result) -> Void in
-            if result == .OK {
-                let urls = openPanel.urls
-                for url in urls {
-                    let path = url.path
-                    self.appexProvisionPath = path
-                    self.appexBundleId = ResignHelper.abstractBundleId(self.appexProvisionPath)
-                }
-            }
-        }
-    }
-    
     func handFilePath(_ path: String) {
         if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
             self.ipaPath = path
+            
+            // appex 相关信息来自于ipa，需要先清空
+            self.appexName = ""
+            self.appexBundleId = ""
+            self.appexProvisionPath = ""
             
             self.shouldUnzipAnimate = true
             DispatchQueue.global().async {
                 self.abstractPlugins()
             }
         } else if path.hasSuffix(".mobileprovision") {
-            self.mobileprovisionPath = path
             DispatchQueue.global().async {
-                self.bundleId = ResignHelper.abstractBundleId(self.mobileprovisionPath)
+                let (bundleIdTemp, apsEnvironmentTemp) = ResignHelper.abstractBundleId(path)
+                if (apsEnvironmentTemp == "production") {
+                    self.bundleId = bundleIdTemp
+                    self.mobileprovisionPath = path
+                } else if (self.appexName.count > 0) {
+                    // 如果存在appex，再赋值
+                    self.appexBundleId = bundleIdTemp
+                    self.appexProvisionPath = path
+                }
             }
         }
     }
@@ -276,12 +266,6 @@ struct ContentView: View, DropDelegate {
                 if fileName.contains(".app") {
                     appPath = manager.currentDirectoryPath + "/Payload/" + fileName
                 }
-            }
-            
-            let frameworks = try manager.contentsOfDirectory(atPath: appPath + "/Frameworks")
-            for fileName in frameworks {
-//                let frameworkPath = manager.currentDirectoryPath + "/Frameworks/" + fileName
-                pluginInfoDict[fileName] = ""
             }
             
             let plugIns = try manager.contentsOfDirectory(atPath: appPath + "/PlugIns")
