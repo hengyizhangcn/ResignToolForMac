@@ -121,6 +121,8 @@ struct ContentView: View, DropDelegate {
         }.onDrop(of: [(kUTTypeFileURL as String)], delegate: self)
     }
     
+    /// 拖拽代理实现
+    /// - Parameter info: 拖拽信息
     func performDrop(info: DropInfo) -> Bool {
         let itemProviders = info.itemProviders(for: [(kUTTypeFileURL as String)])
         for itemProvider in itemProviders {
@@ -132,6 +134,32 @@ struct ContentView: View, DropDelegate {
             }
         }
         return true
+    }
+    
+    /// 保存文件事件
+    func saveFileAction() {
+        
+        let ipaPathUrl = URL(fileURLWithPath: self.ipaPath)
+        let ipaName = ipaPathUrl.lastPathComponent
+        
+        let savePanel = NSSavePanel()
+        savePanel.title = "保存安装包"
+        savePanel.message = "选择安装包保存的位置"
+        savePanel.nameFieldLabel = "安装包:"
+        savePanel.nameFieldStringValue = ipaName
+        savePanel.tagNames = ["resignTool"]
+        savePanel.allowedFileTypes = ["ipa", "IPA"]
+        savePanel.isExtensionHidden = false
+        savePanel.canCreateDirectories = true
+        if let window = NSApp.keyWindow {
+            savePanel.beginSheetModal(for: window) { (result) in
+                if (result == .OK) {
+                    if let targetPath = savePanel.url?.path {
+                        ResignHelper.moveIPAFile(tpath: targetPath)
+                    }
+                }
+            }
+        }
     }
     
     /// 浏览文件
@@ -154,7 +182,7 @@ struct ContentView: View, DropDelegate {
         }
     }
     
-    /// 浏览文件
+    /// 浏览文件，单为appex设计
     func browseAppexMobileProvision() {
         let allowedFileTypes = ["mobileprovision"]
         let openPanel = NSOpenPanel()
@@ -169,7 +197,7 @@ struct ContentView: View, DropDelegate {
                 for url in urls {
                     let path = url.path
                     self.appexProvisionPath = path
-                    self.appexBundleId = self.abstractBundleId(self.appexProvisionPath)
+                    self.appexBundleId = ResignHelper.abstractBundleId(self.appexProvisionPath)
                 }
             }
         }
@@ -186,7 +214,7 @@ struct ContentView: View, DropDelegate {
         } else if path.hasSuffix(".mobileprovision") {
             self.mobileprovisionPath = path
             DispatchQueue.global().async {
-                self.bundleId = self.abstractBundleId(self.mobileprovisionPath)
+                self.bundleId = ResignHelper.abstractBundleId(self.mobileprovisionPath)
             }
         }
     }
@@ -215,6 +243,9 @@ struct ContentView: View, DropDelegate {
                     DispatchQueue.main.async {
                         self.sliderValue = step
                         self.showResignProgressBar = self.sliderValue != 10.0
+                        if (self.sliderValue == 10.0) {
+                            self.saveFileAction()
+                        }
                     }
                 }, { (result) in
                     if (!result) {
@@ -223,33 +254,6 @@ struct ContentView: View, DropDelegate {
                 })
             }
         }
-    }
-    
-    /// 提取bundle id
-    func abstractBundleId(_ tempMobileprovisionPath: String) -> String {
-        let mobileprovisionData = ResignHelper.runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", tempMobileprovisionPath])
-        
-        do {
-            let datasourceDictionary = try PropertyListSerialization.propertyList(from: mobileprovisionData, options: [], format: nil)
-            
-            if let dict = datasourceDictionary as? Dictionary<String, Any> {
-                let Entitlements = dict["Entitlements"] as? Dictionary<String, Any>
-                if let entitlementsDict = Entitlements {
-                    let applicationIdentifier = entitlementsDict["application-identifier"] as? String
-                    if let appIdStr = applicationIdentifier {
-                        //去除teamId剩下的即为bundleId
-                        var arr = appIdStr.split(separator: ".")
-                        //去除第一个元素teamId
-                        arr.removeFirst()
-                        let appId = arr.joined(separator: ".")
-                        return appId
-                    }
-                }
-            }
-        } catch {
-            print(error)
-        }
-        return ""
     }
     
     /// 提取插件 frameworks等

@@ -12,6 +12,7 @@ import SwiftUI
 public class ResignHelper {
     
     static var lastTeamName = ""
+    static var newIPAPath = ""
     
     /// execute the command and get the result
     ///
@@ -44,6 +45,11 @@ public class ResignHelper {
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "entitlements.plist"])
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "AppThinning.plist"]) //for thin if exists
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", "appexEntitlements.plist"]) //for appexEntitlements if exists
+    }
+    
+    /// 移除暂存的new App文件夹
+    class func clearNewAppDirectory() {
+        runCommand(launchPath: "/bin/rm", arguments: ["-rf", "new App"])
     }
     
     /// abstract plist for app like framework, extension, appex, etc
@@ -242,12 +248,15 @@ public class ResignHelper {
         let ipaName = URL.init(fileURLWithPath: tempIpaPath!).lastPathComponent
         
         let manager = FileManager.default
+        
+        let targetIPAPath = manager.currentDirectoryPath + "/new App/" + ipaName
         do {
             try manager.createDirectory(atPath: manager.currentDirectoryPath + "/new App/", withIntermediateDirectories: true, attributes: [:])
-            runCommand(launchPath: "/usr/bin/zip", arguments: ["-r", manager.currentDirectoryPath + "/new App/" + ipaName , "Payload/", "AppThinning.plist"])
+            runCommand(launchPath: "/usr/bin/zip", arguments: ["-r", targetIPAPath , "Payload/", "AppThinning.plist"])
         } catch {
             print(error)
         }
+        self.newIPAPath = targetIPAPath
     }
     
     class func findComponentsList(_ tempIpaPath: String) -> Array<String> {
@@ -262,6 +271,33 @@ public class ResignHelper {
             print(error)
         }
         return []
+    }
+    
+    /// 提取bundle id
+    class func abstractBundleId(_ tempMobileprovisionPath: String) -> String {
+        let mobileprovisionData = runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", tempMobileprovisionPath])
+        
+        do {
+            let datasourceDictionary = try PropertyListSerialization.propertyList(from: mobileprovisionData, options: [], format: nil)
+            
+            if let dict = datasourceDictionary as? Dictionary<String, Any> {
+                let Entitlements = dict["Entitlements"] as? Dictionary<String, Any>
+                if let entitlementsDict = Entitlements {
+                    let applicationIdentifier = entitlementsDict["application-identifier"] as? String
+                    if let appIdStr = applicationIdentifier {
+                        //去除teamId剩下的即为bundleId
+                        var arr = appIdStr.split(separator: ".")
+                        //去除第一个元素teamId
+                        arr.removeFirst()
+                        let appId = arr.joined(separator: ".")
+                        return appId
+                    }
+                }
+            }
+        } catch {
+            print(error)
+        }
+        return ""
     }
     
     
@@ -279,6 +315,25 @@ public class ResignHelper {
             } else {
                 alert.runModal()
             }
+        }
+    }
+    
+    /// 移动文件到目标路径
+    /// - Parameter tpath: 目标路径
+    class func moveIPAFile(tpath: String) {
+        if newIPAPath.count > 0 {
+            do{
+                //如果已存在，先删除，否则拷贝不了
+                let fileManager = FileManager.default
+                if fileManager.fileExists(atPath: tpath){
+                    try fileManager.removeItem(atPath: tpath)
+                }
+                try fileManager.moveItem(atPath: newIPAPath, toPath: tpath)
+                clearNewAppDirectory()
+            }catch{
+                
+            }
+            
         }
     }
 }

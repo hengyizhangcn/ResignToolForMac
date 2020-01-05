@@ -118,6 +118,7 @@ class ResignTool {
         
         // 重置初始值
         ResignHelper.lastTeamName = ""
+        ResignHelper.newIPAPath = ""
         
         //remove middle files and directionary
         var appPath = enumeratePayloadApp()
@@ -235,20 +236,6 @@ class ResignTool {
         
         
         actionProgress?(10)
-    }
-    
-    func copyFile(fpath:String, tpath:String) {
-        do{
-            //如果已存在，先删除，否则拷贝不了
-            let fileManager = FileManager.default
-            if fileManager.fileExists(atPath: tpath){
-                try fileManager.removeItem(atPath: tpath)
-            }
-            
-            try fileManager.copyItem(atPath: fpath, toPath: tpath)
-            
-        }catch{}
-        
     }
 }
 
