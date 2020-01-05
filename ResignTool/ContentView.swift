@@ -19,16 +19,27 @@ enum SCFileType {
     case mobileprovision
 }
 
+/// 主界面
 struct ContentView: View, DropDelegate {
+    /// 主应用路径
     @State private var ipaPath = ""
+    /// 主应用对应的签名文件路径
     @State private var mobileprovisionPath = ""
+    /// 主应用签名后的包标识
     @State private var bundleId = ""
+    /// 新版本号
     @State private var newVersion = ""
+    /// 进度条进度
     @State private var sliderValue: Double = 0
+    /// 扩展名称
     @State private var appexName = ""
+    /// 扩展对应的签名文件
     @State private var appexProvisionPath = ""
+    /// 扩展签名后 的包标识
     @State private var appexBundleId = ""
+    /// 是否显示签名进度条
     @State private var showResignProgressBar = false
+    /// 是否显示解压动画
     @State private var shouldUnzipAnimate = false
     private let maxValue: Double = 10
     
@@ -135,7 +146,7 @@ struct ContentView: View, DropDelegate {
         return true
     }
     
-    /// 保存文件事件
+    /// 保存文件事件处理
     func saveFileAction() {
         
         let ipaPathUrl = URL(fileURLWithPath: self.ipaPath)
@@ -161,7 +172,7 @@ struct ContentView: View, DropDelegate {
         }
     }
     
-    /// 浏览文件
+    /// 浏览选择文件
     func browseAction() {
         let allowedFileTypes = ["ipa", "IPA", "mobileprovision"]
         let openPanel = NSOpenPanel()
@@ -181,6 +192,8 @@ struct ContentView: View, DropDelegate {
         }
     }
     
+    /// 处理选择的文件
+    /// - Parameter path: 文件路径
     func handFilePath(_ path: String) {
         if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
             self.ipaPath = path
@@ -209,6 +222,7 @@ struct ContentView: View, DropDelegate {
         }
     }
     
+    /// 重签名按钮响应事件
     func resignAction() {
         if ipaPath.count == 0 {
             ResignHelper.showAlertWith(title: nil, message: "请指定IPA文件", style: .critical)
@@ -246,7 +260,7 @@ struct ContentView: View, DropDelegate {
         }
     }
     
-    /// 提取插件 frameworks等
+    /// 提取扩展文件
     func abstractPlugins() {
         
         //remove middle files and directionary

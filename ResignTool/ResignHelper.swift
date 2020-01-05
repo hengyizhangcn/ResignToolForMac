@@ -9,9 +9,12 @@
 import Foundation
 import SwiftUI
 
+/// 重签名帮助类
 public class ResignHelper {
     
+    /// 记录上次重签名对应的组名
     static var lastTeamName = ""
+    /// 签名后IPA路径
     static var newIPAPath = ""
     
     /// execute the command and get the result
@@ -221,6 +224,11 @@ public class ResignHelper {
         return true
     }
     
+    /// 重签名framework文件夹下的文件
+    /// - Parameters:
+    ///   - componentFile: 待签名框架
+    ///   - provisionPath: 签名文件
+    ///   - plistFilePath: entitlements文件
     class func resignDylibs(_ componentFile: String?, _ provisionPath: String?, _ plistFilePath: String) {
         var TeamName: String?
         do {
@@ -259,6 +267,8 @@ public class ResignHelper {
         self.newIPAPath = targetIPAPath
     }
     
+    /// 找出frameworks下所有的文件
+    /// - Parameter tempIpaPath: ipa文件路径
     class func findComponentsList(_ tempIpaPath: String) -> Array<String> {
         
         let manager = FileManager.default
@@ -309,6 +319,11 @@ public class ResignHelper {
     
     // MARK: - Alert
     
+    /// 显示警示框
+    /// - Parameters:
+    ///   - title: 标题
+    ///   - message: 提示消息
+    ///   - style: 类型
     class func showAlertWith(title: String?, message: String, style: NSAlert.Style) {
         DispatchQueue.main.async {
             let alert = NSAlert()
@@ -324,7 +339,7 @@ public class ResignHelper {
         }
     }
     
-    /// 移动文件到目标路径
+    /// 移动IPA 文件到目标路径
     /// - Parameter tpath: 目标路径
     class func moveIPAFile(tpath: String) {
         if newIPAPath.count > 0 {

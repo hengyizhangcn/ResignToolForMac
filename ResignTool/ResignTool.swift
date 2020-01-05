@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// 重签名工具
 class ResignTool {
     let help =
         "  version: 1.2.0\n" +
@@ -16,22 +17,25 @@ class ResignTool {
             "  -i   the path of .ipa file.\n" +
             "  -m   the path of .mobileprovision file.\n" +
             "  -v   the new version of the app.\n" +
-            "  -callKit   the callkit mobileprovision file(This is customed option).\n" +
             "  -b   the new bundle id of the app.\n" +
             "  -info   the basic info of this ipa(in the future).\n" +
             "       if the version is not set, and 1 will be automatically added to the last of version components which separated by charater '.'.\n" +
     "  Please contact if you have some special demmands."
     
+    /// 主包路径
     var ipaPath: String?
+    /// 主包签名文件路径
     var mobileprovisionPath: String?
+    /// 新版本
     var newVersion: String?
-    var callKitMobileProvision: String?
+    /// 扩展应用信息
     var appexInfoArray: [[String: String]] = [[:]]
+    /// 主对签名后对应的bundleId
     var bundleId: String?
     
-    /// enumerate Payload directory, find out the .app file
+    /// 找到.app文件
     ///
-    /// - Returns: .app file name
+    /// - Returns: .app文件
     @discardableResult
     func enumeratePayloadApp() -> String {
         let manager = FileManager.default
@@ -50,7 +54,7 @@ class ResignTool {
         return ""
     }
     
-    /// print help
+    /// 打印帮助
     func showHelp() {
         print(help)
         terminate()
@@ -61,6 +65,7 @@ class ResignTool {
         exit(0)
     }
     
+    /// 检查用户输入
     func checkUserInput() {
         let arguments = CommandLine.arguments
         
@@ -85,11 +90,6 @@ class ResignTool {
                     newVersion = arguments[i + 1]
                 }
                 break
-            case "-callKit":
-                if arguments.count > i {
-                    callKitMobileProvision = arguments[i + 1]
-                }
-                break
             case "-b":
                 if arguments.count > i {
                     bundleId = arguments[i + 1]
@@ -112,6 +112,10 @@ class ResignTool {
         }
     }
     
+    /// 重签名流程
+    /// - Parameters:
+    ///   - actionProgress: 重签名进程回调
+    ///   - resultBlock: 签名结果回调
     func resignAction(_ actionProgress: ((Double) -> ())?, _ resultBlock: ((Bool) -> ())?) {
         
         actionProgress?(0)
@@ -149,22 +153,6 @@ class ResignTool {
         actionProgress?(3)
         
         let componentsList = ResignHelper.findComponentsList(appPath)
-        
-//        if callKitMobileProvision != nil {
-//            let callKitPlistFilePath = "CallFunction.plist"
-//            let callKitAppexPath = appPath + "/PlugIns/CallFunction.appex"
-//
-//            //abstract plist for callkit
-//            ResignHelper.abstractPlist(callKitAppexPath, nil, callKitPlistFilePath);
-//
-//            actionProgress?(4)
-//
-//            //resign appex
-//            ResignHelper.replaceProvisionAndResign(callKitAppexPath, callKitMobileProvision, callKitPlistFilePath)
-//
-//
-//            actionProgress?(5)
-//        }
         
         for appexInfoDict in appexInfoArray {
             if let appexName = appexInfoDict["appexName"],

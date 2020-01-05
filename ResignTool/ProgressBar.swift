@@ -9,11 +9,17 @@
 import SwiftUI
 import AppKit
 
+/// 自定义SwiftUI进度条
 struct ProgressBar: View {
+    /// 当前进度
     private let value: Binding<Double>
+    /// 最大值
     private let maxValue: Double
+    /// 背景是不可用
     private let backgroundEnabled: Bool
+    /// 背景色
     private let backgroundColor: Color
+    /// 前景色
     private let foregroundColor: Color
     
     init(value: Binding<Double>,
@@ -52,6 +58,11 @@ struct ProgressBar: View {
         }
     }
     
+    /// 进度设置
+    /// - Parameters:
+    ///   - value: 当前进度
+    ///   - maxValue: 最大进度值
+    ///   - width: 宽度
     private func progress(value: Double,
                           maxValue: Double,
                           width: CGFloat) -> CGFloat {
