@@ -147,7 +147,7 @@ public class ResignHelper {
             plistDict["CFBundleShortVersionString"] = refreshVersion!
             plistDict["CFBundleVersion"] = refreshVersion!
             
-            if bundleIdentifier != nil {
+            if bundleIdentifier != nil && bundleIdentifier!.count > 0 {
                 plistDict["CFBundleIdentifier"] = bundleIdentifier!
             }
             
@@ -191,7 +191,7 @@ public class ResignHelper {
             
         } else {
             do {
-                //if appPath + "/embedded.mobileprovision" doesnot exist, read team name from the app
+                //if appPath + "/embedded.mobileprovision" does exist, read team name from the app
                 let mobileprovisionData = runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", appPath + "/embedded.mobileprovision"])
                 
                 let datasourceDictionary = try PropertyListSerialization.propertyList(from: mobileprovisionData, options: [], format: nil)
@@ -204,9 +204,9 @@ public class ResignHelper {
             }
         }
         
-        if ResignHelper.lastTeamName == "" {
-            ResignHelper.lastTeamName = TeamName!
-        } else if ResignHelper.lastTeamName != TeamName! {
+        if lastTeamName == "" {
+            lastTeamName = TeamName!
+        } else if lastTeamName != TeamName! {
             showAlertWith(title: "多次签名需要的证书不是同一个", message: "请检查各描述文件的设置！", style: .critical)
             return false
         }
