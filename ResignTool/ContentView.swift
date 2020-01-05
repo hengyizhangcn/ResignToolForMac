@@ -29,6 +29,8 @@ struct ContentView: View, DropDelegate {
     @State private var appexName = ""
     @State private var appexProvisionPath = ""
     @State private var appexBundleId = ""
+    @State private var showResignProgressBar = false
+    @State private var shouldUnzipAnimate = false
     private let maxValue: Double = 10
     
     var body: some View {
@@ -40,7 +42,6 @@ struct ContentView: View, DropDelegate {
                     self.browseAction()
                 }) {
                     Text("浏览")
-                        .foregroundColor(Color.black)
                 }
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
@@ -52,7 +53,6 @@ struct ContentView: View, DropDelegate {
                         self.browseAction()
                     }) {
                         Text("浏览")
-                            .foregroundColor(Color.black)
                     }
                 }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
                 
@@ -69,19 +69,18 @@ struct ContentView: View, DropDelegate {
             
             HStack {
                 Text("版本号:").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                TextField("默认尾号加1，非必填", text: $newVersion)
+                TextField("非必填", text: $newVersion)
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
             
             VStack {
                 if (appexName.count > 0) {
                     HStack {
                         Text("\(appexName):").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                        TextField("描述文件路径", text: $appexProvisionPath)
+                        TextField("描述文件路径，非必填", text: $appexProvisionPath)
                         Button(action: {
                             self.browseAppexMobileProvision()
                         }) {
                             Text("浏览")
-                                .foregroundColor(Color.black)
                         }
                     }.padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
                     if (appexProvisionPath.count > 0) {
@@ -97,19 +96,28 @@ struct ContentView: View, DropDelegate {
             
             
             HStack {
-                Button(action: {
-                    self.resignAction()
-                }) {
-                    Text("重签名")
-                        .foregroundColor(Color.black)
+                if (shouldUnzipAnimate) {
+                    ActivityIndicator(shouldAnimate: $shouldUnzipAnimate)
+                } else {
+                    Button(action: {
+                        self.resignAction()
+                    }) {
+                        Text("重签名")
+                    }
                 }
             }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
-//            HStack {
-//                ProgressBar(value: $sliderValue,
-//                        maxValue: self.maxValue,
-//                        foregroundColor: .green)
-//                .frame(height: 5)
-//            }.padding(EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15))
+            if (showResignProgressBar) {
+                HStack {
+                    ProgressBar(value: $sliderValue,
+                                maxValue: self.maxValue,
+                                foregroundColor: .green)
+                        .frame(height: 5)
+                }.padding(EdgeInsets(top: 0, leading: 15, bottom: 15, trailing: 15))
+            } else if (sliderValue == 10.0) {
+                HStack {
+                    Text("完成!")
+                }.padding(EdgeInsets(top: 0, leading: 15, bottom: 15, trailing: 15))
+            }
         }.onDrop(of: [(kUTTypeFileURL as String)], delegate: self)
     }
     
@@ -170,6 +178,8 @@ struct ContentView: View, DropDelegate {
     func handFilePath(_ path: String) {
         if path.hasSuffix(".ipa") || path.hasSuffix(".IPA") {
             self.ipaPath = path
+            
+            self.shouldUnzipAnimate = true
             DispatchQueue.global().async {
                 self.abstractPlugins()
             }
@@ -183,38 +193,35 @@ struct ContentView: View, DropDelegate {
     
     func resignAction() {
         if ipaPath.count == 0 {
-            showAlertWith(title: nil, message: "请指定IPA文件", style: .critical)
+            ResignHelper.showAlertWith(title: nil, message: "请指定IPA文件", style: .critical)
         } else if mobileprovisionPath.count == 0 {
-            showAlertWith(title: nil, message: "请指定描述文件", style: .critical)
+            ResignHelper.showAlertWith(title: nil, message: "请指定描述文件", style: .critical)
         } else {
             //开始签名
             let resignTool = ResignTool()
             resignTool.ipaPath = ipaPath
             resignTool.mobileprovisionPath = mobileprovisionPath
             resignTool.bundleId = bundleId
-            resignTool.appexInfoArray = [["appexName":appexName,
-                                          "appexProvisionPath":appexProvisionPath,
-                                          "appexBundleId":appexBundleId]]
-            resignTool.newVersion = newVersion
-            resignTool.resignAction {(step) in
-                self.sliderValue = Double(step)
-                print(step)
+            if appexName.count > 0 {
+                resignTool.appexInfoArray = [["appexName":appexName,
+                                              "appexProvisionPath":appexProvisionPath,
+                                              "appexBundleId":appexBundleId]]
             }
-        }
-    }
-    
-    // MARK: - Alert
-    
-    private func showAlertWith(title: String?, message: String, style: NSAlert.Style) {
-        let alert = NSAlert()
-        alert.messageText = title ?? "ResignTool"
-        alert.informativeText = message
-        alert.alertStyle = style
-        alert.addButton(withTitle: "关闭")
-        if let window = NSApp.keyWindow {
-            alert.beginSheetModal(for: window, completionHandler: nil)
-        } else {
-            alert.runModal()
+            resignTool.newVersion = newVersion
+            
+            showResignProgressBar = true
+            DispatchQueue.global().async {
+                resignTool.resignAction({(step) in
+                    DispatchQueue.main.async {
+                        self.sliderValue = step
+                        self.showResignProgressBar = self.sliderValue != 10.0
+                    }
+                }, { (result) in
+                    if (!result) {
+                        self.showResignProgressBar = false
+                    }
+                })
+            }
         }
     }
     
@@ -283,8 +290,7 @@ struct ContentView: View, DropDelegate {
         } catch {
             print("Error occurs")
         }
-        
-        print("pluginInfoDict: ", pluginInfoDict)
+        shouldUnzipAnimate = false
     }
 }
 

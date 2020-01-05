@@ -7,8 +7,11 @@
 //
 
 import Foundation
+import SwiftUI
 
 public class ResignHelper {
+    
+    static var lastTeamName = ""
     
     /// execute the command and get the result
     ///
@@ -52,7 +55,7 @@ public class ResignHelper {
     ///   - plistFilePath: target plist file
     class func abstractPlist(_ appPath: String, _ mobileprovisionPathTemp: String?, _ entitlementsFilePath: String) {
         
-        if mobileprovisionPathTemp != nil {
+        if mobileprovisionPathTemp != nil && mobileprovisionPathTemp!.count > 0 {
             let mobileprovisionData = runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", mobileprovisionPathTemp!]);
 
             let fileUrl = URL.init(fileURLWithPath: "mobileprovision.plist")
@@ -162,9 +165,9 @@ public class ResignHelper {
     ///   - appPath: the appPath can be framework, extension, appex, etc
     ///   - provisionPath: mobileprovision
     ///   - plistFilePath: plist file
-    class func replaceProvisionAndResign(_ appPath: String, _ provisionPath: String?, _ entitlementsFilePath: String) {
+    class func replaceProvisionAndResign(_ appPath: String, _ provisionPath: String?, _ entitlementsFilePath: String) -> Bool {
         var TeamName: String?
-        if provisionPath != nil {
+        if provisionPath != nil && provisionPath!.count > 0 {
             let mobileprovisionData = runCommand(launchPath: "/usr/bin/security", arguments: ["cms", "-D", "-i", provisionPath!])
             
             do {
@@ -195,12 +198,21 @@ public class ResignHelper {
             }
         }
         
+        if ResignHelper.lastTeamName == "" {
+            ResignHelper.lastTeamName = TeamName!
+        } else if ResignHelper.lastTeamName != TeamName! {
+            showAlertWith(title: "多次签名需要的证书不是同一个", message: "请检查各描述文件的设置！", style: .critical)
+            return false
+        }
+        
         //Remove old CodeSignature, can be ignored
         runCommand(launchPath: "/bin/rm", arguments: ["-rf", appPath + "_CodeSignature"])
         
         //resign extension/framework/app etc.
         let teamNameCombinedStr = "iPhone Distribution: " + TeamName!
         runCommand(launchPath: "/usr/bin/codesign", arguments: ["-fs", teamNameCombinedStr, "--entitlements", entitlementsFilePath, appPath])
+        
+        return true
     }
     
     class func resignDylibs(_ componentFile: String?, _ provisionPath: String?, _ plistFilePath: String) {
@@ -250,5 +262,23 @@ public class ResignHelper {
             print(error)
         }
         return []
+    }
+    
+    
+    // MARK: - Alert
+    
+    class func showAlertWith(title: String?, message: String, style: NSAlert.Style) {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = title ?? "ResignTool"
+            alert.informativeText = message
+            alert.alertStyle = style
+            alert.addButton(withTitle: "关闭")
+            if let window = NSApp.keyWindow {
+                alert.beginSheetModal(for: window, completionHandler: nil)
+            } else {
+                alert.runModal()
+            }
+        }
     }
 }

@@ -112,7 +112,13 @@ class ResignTool {
         }
     }
     
-    func resignAction(_ actionProgress: ((Int) -> ())?) {
+    func resignAction(_ actionProgress: ((Double) -> ())?, _ resultBlock: ((Bool) -> ())?) {
+        
+        actionProgress?(0)
+        
+        // 重置初始值
+        ResignHelper.lastTeamName = ""
+        
         //remove middle files and directionary
         var appPath = enumeratePayloadApp()
         
@@ -143,21 +149,21 @@ class ResignTool {
         
         let componentsList = ResignHelper.findComponentsList(appPath)
         
-        if callKitMobileProvision != nil {
-            let callKitPlistFilePath = "CallFunction.plist"
-            let callKitAppexPath = appPath + "/PlugIns/CallFunction.appex"
-            
-            //abstract plist for callkit
-            ResignHelper.abstractPlist(callKitAppexPath, nil, callKitPlistFilePath);
-            
-            actionProgress?(4)
-            
-            //resign appex
-            ResignHelper.replaceProvisionAndResign(callKitAppexPath, callKitMobileProvision, callKitPlistFilePath)
-
-            
-            actionProgress?(5)
-        }
+//        if callKitMobileProvision != nil {
+//            let callKitPlistFilePath = "CallFunction.plist"
+//            let callKitAppexPath = appPath + "/PlugIns/CallFunction.appex"
+//
+//            //abstract plist for callkit
+//            ResignHelper.abstractPlist(callKitAppexPath, nil, callKitPlistFilePath);
+//
+//            actionProgress?(4)
+//
+//            //resign appex
+//            ResignHelper.replaceProvisionAndResign(callKitAppexPath, callKitMobileProvision, callKitPlistFilePath)
+//
+//
+//            actionProgress?(5)
+//        }
         
         for appexInfoDict in appexInfoArray {
             if let appexName = appexInfoDict["appexName"],
@@ -166,8 +172,6 @@ class ResignTool {
                 
                 let appexEntitlementsFilePath = "appexEntitlements.plist"
                 let appexPath = appPath + "/PlugIns/" + appexName
-                print(appexPath)
-                print(appexProvisionPath)
                 
                 //abstract plist for callkit
                 ResignHelper.abstractPlist(appexPath, appexProvisionPath, appexEntitlementsFilePath);
@@ -178,7 +182,11 @@ class ResignTool {
                 ResignHelper.configurefreshVersion(newVersion, appexBundleId, appexPath)
                 
                 //resign appex
-                ResignHelper.replaceProvisionAndResign(appexPath, appexProvisionPath, appexEntitlementsFilePath)
+                let resignResult = ResignHelper.replaceProvisionAndResign(appexPath, appexProvisionPath, appexEntitlementsFilePath)
+                if (!resignResult) {
+                    resultBlock?(false)
+                    return
+                }
 
                 
                 actionProgress?(5)
@@ -187,13 +195,11 @@ class ResignTool {
         
         for path in componentsList {
             
-            print("path:", path)
-            
             let filePath = appPath + "/Frameworks/" + path
             
             ResignHelper.resignDylibs(filePath, mobileprovisionPath, "entitlements.plist")
             
-            actionProgress?(4)
+            actionProgress?(5.5)
         }
         
         //set the app version
@@ -203,8 +209,11 @@ class ResignTool {
         actionProgress?(6)
         
         //resign app
-        ResignHelper.replaceProvisionAndResign(appPath, mobileprovisionPath, "entitlements.plist")
-        
+        let resignAppResult = ResignHelper.replaceProvisionAndResign(appPath, mobileprovisionPath, "entitlements.plist")
+        if (!resignAppResult) {
+            resultBlock?(false)
+            return
+        }
         
         actionProgress?(7)
         
@@ -226,8 +235,6 @@ class ResignTool {
         
         
         actionProgress?(10)
-        
-        print("Done!")
     }
     
     func copyFile(fpath:String, tpath:String) {
