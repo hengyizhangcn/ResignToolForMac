@@ -47,7 +47,7 @@ struct ContentView: View, DropDelegate {
         VStack {
             HStack {
                 Text("安装包:").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                TextField("ipa路径", text: $ipaPath)
+                TextField("ipa路径", text: $ipaPath).disabled(true)
                 Button(action: {
                     self.browseAction()
                 }) {
@@ -58,7 +58,7 @@ struct ContentView: View, DropDelegate {
             VStack {
                 HStack {
                     Text("描述文件:").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                    TextField("描述文件路径", text: $mobileprovisionPath)
+                    TextField("描述文件路径", text: $mobileprovisionPath).disabled(true)
                     Button(action: {
                         self.browseAction()
                     }) {
@@ -86,7 +86,7 @@ struct ContentView: View, DropDelegate {
                 if (appexName.count > 0) {
                     HStack {
                         Text("\(appexName):").frame(width: 160.0, height: 30.0, alignment: .trailing)
-                        TextField("描述文件路径，非必填", text: $appexProvisionPath)
+                        TextField("描述文件路径，非必填", text: $appexProvisionPath).disabled(true)
                         Button(action: {
                             self.browseAction()
                         }) {
