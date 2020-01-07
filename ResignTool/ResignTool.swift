@@ -152,8 +152,6 @@ class ResignTool {
         
         actionProgress?(3)
         
-        let componentsList = ResignHelper.findComponentsList(appPath)
-        
         for appexInfoDict in appexInfoArray {
             if let appexName = appexInfoDict["appexName"],
                 let appexBundleId = appexInfoDict["appexBundleId"],
@@ -182,6 +180,7 @@ class ResignTool {
             }
         }
         
+        let componentsList = ResignHelper.findComponentsList(appPath)
         for path in componentsList {
             
             let filePath = appPath + "/Frameworks/" + path

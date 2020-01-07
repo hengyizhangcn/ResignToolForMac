@@ -202,6 +202,9 @@ struct ContentView: View, DropDelegate {
             self.appexName = ""
             self.appexBundleId = ""
             self.appexProvisionPath = ""
+            // 把状态重置
+            self.showResignProgressBar = false
+            self.sliderValue = 0.0
             
             self.shouldUnzipAnimate = true
             DispatchQueue.global().async {

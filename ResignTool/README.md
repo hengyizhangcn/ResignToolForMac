@@ -29,4 +29,3 @@ https://stackoverflow.com/questions/24232799/why-choose-struct-over-class
 1.存在两个证书如何提示用户删除？
 2.如何提示用户证书不存在？或证书不可用?
 3.如何提示用户中间步骤错误？
-4.把公司融系列、绿城系列、物管的包都测试一遍!!!
