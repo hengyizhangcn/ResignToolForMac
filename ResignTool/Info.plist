@@ -34,5 +34,7 @@
 	<true/>
 	<key>NSDownloadsFolderUsageDescription</key>
 	<string>请允许访问下载文件夹，以更好的为您服务</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.developer-tools</string>
 </dict>
 </plist>
